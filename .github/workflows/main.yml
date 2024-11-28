@@ -1,0 +1,48 @@
+name: .NET CI
+
+# Trigger the workflow on push and pull request events
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up .NET SDK
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0'  # Specify the .NET version (adjust as needed)
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the application
+      - name: Build the application
+        run: dotnet build --configuration Release
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: dotnet test --configuration Release
+
+      # Step 6: Publish the application (optional, e.g., for deployment)
+      - name: Publish the application
+        run: dotnet publish --configuration Release --output ./publish
+
+      # Step 7: Upload artifacts (optional, for publishing results)
+      - name: Upload published files
+        uses: actions/upload-artifact@v3
+        with:
+          name: published-app
+          path: ./publish
